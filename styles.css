@@ -9,6 +9,7 @@ body {
     background-color: white;
     color: black;
     padding-top: 70px;
+    touch-action: none;
 }
 
 
@@ -489,4 +490,514 @@ p {
     background-color: rgb(99, 94, 195);
     transform: translateY(-2px);
     box-shadow: 0px 6px 15px rgba(54, 48, 247, 0.3);
+}
+
+
+/* ===== RITTEN MANAGEMENT ===== */
+
+
+/* Ritten sectie - hoofd container */
+
+.ritten-section {
+    padding: 20px 0;
+}
+
+.ritten-section h1 {
+    color: rgb(54, 48, 247);
+    margin-bottom: 30px;
+}
+
+.ritten-section h2 {
+    color: #333;
+    margin-top: 30px;
+    margin-bottom: 20px;
+    font-size: 24px;
+}
+
+
+/* Formulier container voor nieuwe ritten */
+
+.rit-form-container {
+    background-color: #f5f5f5;
+    padding: 25px;
+    border-radius: 12px;
+    margin-bottom: 40px;
+    border-left: 4px solid rgb(54, 48, 247);
+}
+
+
+/* Formulier layout - rijen voor beter design */
+
+.rit-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-row {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    align-items: flex-end;
+}
+
+.rit-form .form-group {
+    flex: 1;
+    min-width: 150px;
+}
+
+.rit-form label {
+    display: block;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.rit-form input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.rit-form input:focus {
+    outline: none;
+    border-color: rgb(54, 48, 247);
+    box-shadow: 0px 0px 6px rgba(54, 48, 247, 0.2);
+}
+
+
+/* Knop om rit toe te voegen */
+
+.btn-add {
+    background-color: rgb(54, 48, 247);
+    color: white;
+    padding: 10px 25px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    height: 40px;
+}
+
+.btn-add:hover {
+    background-color: rgb(99, 94, 195);
+    transform: translateY(-2px);
+    box-shadow: 0px 4px 12px rgba(54, 48, 247, 0.2);
+}
+
+
+/* Tabel container */
+
+.ritten-table-container {
+    background-color: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+
+/* Ritten tabel styling */
+
+.ritten-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.ritten-table thead {
+    background-color: rgb(54, 48, 247);
+    color: white;
+}
+
+.ritten-table th {
+    padding: 15px 20px;
+    text-align: left;
+    font-weight: bold;
+}
+
+.ritten-table td {
+    padding: 15px 20px;
+    border-bottom: 1px solid #eee;
+}
+
+
+/* Rij styling - actieve ritten */
+
+.ritten-table tr.rit-actief {
+    background-color: #fff;
+}
+
+.ritten-table tr.rit-actief:hover {
+    background-color: #f9f9f9;
+}
+
+
+/* Rij styling - afgeleverde ritten */
+
+.ritten-table tr.rit-afgeleverd {
+    background-color: #e8f5e9;
+    opacity: 0.8;
+}
+
+.ritten-table tr.rit-afgeleverd:hover {
+    background-color: #d4edda;
+}
+
+
+/* Status badges */
+
+.status-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.status-badge.in-transit {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.status-badge.afgeleverd {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+
+/* Action buttons container */
+
+.action-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+
+/* Algemene button styling */
+
+.btn {
+    padding: 8px 12px;
+    border-radius: 6px;
+    text-decoration: none;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: bold;
+    transition: all 0.2s ease;
+    border: none;
+    display: inline-block;
+}
+
+.btn-small {
+    padding: 6px 10px;
+    font-size: 11px;
+}
+
+.btn-success {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.btn-success:hover {
+    background-color: #45a049;
+    transform: translateY(-1px);
+}
+
+.btn-danger {
+    background-color: #f44336;
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #da190b;
+    transform: translateY(-1px);
+}
+
+
+/* Empty state - geen ritten bericht */
+
+.empty-state {
+    padding: 40px 20px;
+    text-align: center;
+    color: #999;
+}
+
+.empty-state p {
+    font-size: 16px;
+    color: #666;
+}
+
+
+/* ===== ACCORDION STYLING ===== */
+
+
+/* Accordion container */
+
+.accordion {
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+
+/* Accordion item */
+
+.accordion-item {
+    border-bottom: 1px solid #eee;
+    transition: background-color 0.2s ease;
+}
+
+.accordion-item:last-child {
+    border-bottom: none;
+}
+
+.accordion-item.afgeleverd {
+    background-color: #e8f5e9;
+    opacity: 0.85;
+}
+
+
+/* Accordion header - clickable */
+
+.accordion-header {
+    width: 100%;
+    padding: 18px 20px;
+    background-color: white;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-size: 15px;
+    transition: all 0.2s ease;
+    text-align: left;
+    font-weight: 500;
+}
+
+.accordion-item.open .accordion-header {
+    background-color: #f5f5f5;
+}
+
+.accordion-header:hover {
+    background-color: #f9f9f9;
+}
+
+.accordion-header:active {
+    background-color: #f0f0f0;
+}
+
+
+/* Accordion pijl */
+
+.accordion-arrow {
+    display: inline-block;
+    color: rgb(54, 48, 247);
+    font-size: 12px;
+    transition: transform 0.2s ease;
+    min-width: 15px;
+}
+
+
+/* Accordion header content */
+
+.accordion-date {
+    font-weight: bold;
+    color: #333;
+    min-width: 90px;
+}
+
+.accordion-dest {
+    color: rgb(54, 48, 247);
+    font-weight: 600;
+    flex: 1;
+}
+
+.accordion-klant {
+    color: #666;
+    font-size: 14px;
+}
+
+.accordion-status {
+    margin-left: auto;
+}
+
+
+/* Accordion content - uitvouwbare sectie */
+
+.accordion-content {
+    display: none;
+    padding: 0;
+    background-color: white;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+}
+
+.accordion-item.open .accordion-content {
+    display: block;
+    max-height: 2000px;
+    padding: 20px;
+    border-top: 2px solid rgb(54, 48, 247);
+}
+
+
+/* Items sectie in accordion */
+
+.items-section {
+    margin-bottom: 20px;
+}
+
+.items-section h3 {
+    color: #333;
+    margin-bottom: 15px;
+    font-size: 16px;
+}
+
+
+/* Items tabel */
+
+.items-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.items-table thead {
+    background-color: #f0f0f0;
+}
+
+.items-table th {
+    padding: 12px;
+    text-align: left;
+    font-weight: bold;
+    color: #333;
+    border-bottom: 2px solid #ddd;
+    font-size: 13px;
+}
+
+.items-table td {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+}
+
+.items-table tr.item-bezorgd {
+    background-color: #f0fdf4;
+    opacity: 0.7;
+}
+
+.items-table tr:hover {
+    background-color: #fafafa;
+}
+
+
+/* Item acties */
+
+.item-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-item {
+    padding: 6px 10px;
+    border-radius: 4px;
+    text-decoration: none;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: bold;
+    transition: all 0.2s ease;
+    border: none;
+    display: inline-block;
+}
+
+.btn-item-success {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.btn-item-success:hover {
+    background-color: #45a049;
+}
+
+.btn-item-danger {
+    background-color: #f44336;
+    color: white;
+}
+
+.btn-item-danger:hover {
+    background-color: #da190b;
+}
+
+
+/* Geen items bericht */
+
+.no-items {
+    color: #999;
+    font-style: italic;
+    padding: 15px 0;
+}
+
+
+/* Form om item toe te voegen */
+
+.add-item-form {
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    border-left: 3px solid rgb(54, 48, 247);
+}
+
+.add-item-form h4 {
+    margin-top: 0;
+    margin-bottom: 12px;
+    color: #333;
+    font-size: 14px;
+}
+
+.item-form-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.item-form-row input {
+    padding: 8px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 13px;
+    flex: 1;
+}
+
+.item-form-row input[type="number"] {
+    flex: 0 0 auto;
+}
+
+.btn-add-item {
+    background-color: rgb(54, 48, 247);
+    color: white;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 12px;
+    transition: all 0.2s ease;
+}
+
+.btn-add-item:hover {
+    background-color: rgb(99, 94, 195);
+    transform: translateY(-1px);
+}
+
+
+/* Rit acties sectie */
+
+.rit-actions {
+    display: flex;
+    gap: 10px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
 }
