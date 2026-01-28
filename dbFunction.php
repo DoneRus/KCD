@@ -1,6 +1,5 @@
 
     <?php
-
     require_once 'dbConnect.php';  
    // session_start(); not gonna make the same mistake
 
@@ -43,8 +42,8 @@ public function UserRegister($gebruikersnaam, $wachtwoord) {
 
         $result = $stmt->fetch();
 
-        if ($result->num_rows === 1) {
-            $user_data = $result->fetch(PDO::FETCH_ASSOC); //dont forget to learn this similar to fetch_assoc
+        if ($stmt->rowCount() === 1) { // changed from result->num_rows beacuse it was used for sqli
+        $user_data = $stmt->fetch(PDO::FETCH_ASSOC); // Fetch one row as an associative array (Search this)
 
             $_SESSION['login'] = true;
             $_SESSION['uid'] = $user_data['id'];

@@ -7,7 +7,7 @@
         // destroy the session   
         session_destroy();  
     } ;
-     if(!($_SESSION)){  
-        header("Location:video.php");  
+     if(!isset($_SESSION)){  
+        header("Location:login.php");  
     }   
 ?>
