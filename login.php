@@ -1,5 +1,9 @@
 <?php
+
 include 'generalrun.php';
+ if (($_SESSION)){
+    echo "there is a session here";
+   };
 ?>
 <!DOCTYPE html>
 <html lang="nl" class="no-js">

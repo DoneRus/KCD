@@ -13,6 +13,9 @@
          if (($_SESSION)){
     echo "there is a session here";
    };
+            if (!isset($_SESSION)){
+        header("Location:login.php");  
+   };
 
     ?>  
     <!DOCTYPE html>
