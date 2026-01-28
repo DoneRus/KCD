@@ -1,6 +1,5 @@
 
     <?php   
-        session_start();
         include_once('dbFunction.php');  
         if (isset($_POST['logout'])){  
             // remove all session variables  

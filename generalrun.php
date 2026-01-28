@@ -11,7 +11,7 @@
     $user = $funObj->Login($gebruikersnaamid, $wachtwoord);
     // check if the user variable has the right credits
     if ($user) {
-        header("Location: home.php");
+        header("Location: home.php"); //each submit that is right sends you to .....
         //Maybe create a session from here or not
         exit;
     } else {

@@ -1,5 +1,6 @@
 
     <?php
+            session_start();
     require_once 'dbConnect.php';  
    // session_start(); not gonna make the same mistake
 
