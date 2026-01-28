@@ -1,29 +1,31 @@
 <?php  
     include_once('dbFunction.php');  
        
+
+    // NOTE $funObj is a database variable that will contain all neccesarry database creds | wachtwoord | gebruikersnaam
     $funObj = new dbFunction();  
     if (isset($_POST['login'])) {
-    $username = $_POST['username'] ?? '';
-    $password = $_POST['password'] ?? '';
+    $gebruikersnaamid = $_POST['ugebruikersnaamid'] ?? '';
+    $wachtwoord = $_POST['wachtwoord'] ?? '';
 
-    $user = $funObj->Login($username, $password);
+    $user = $funObj->Login($gebruikersnaamid, $wachtwoord);
     // check if the user variable has the right credits
     if ($user) {
         header("Location: home.php");
         //Maybe create a session from here or not
         exit;
     } else {
-        echo "<script>alert('Username / Password Not Match')</script>";
+        echo "<script>alert('gebruikersnaam / wachtwoord Not Match')</script>";
     }
 }
     if(isset($_POST['register'])){  
-        $username = $_POST['username'];  
-        $password = $_POST['password'];  
-        $confirmPassword = $_POST['confirm_password'];  
-        if($password == $confirmPassword){  
-            $username = $funObj->isUserExist($username);  
-            if(!$username){  
-                $register = $funObj->UserRegister($username, $password); 
+        $gebruikersnaamid = $_POST['gebruikersnaamid'];  
+        $wachtwoord = $_POST['wachtwoord'];  
+        $confirmwachtwoord = $_POST['confirm_wachtwoord'];  
+        if($wachtwoord == $confirmwachtwoord){  
+            $gebruikersnaam = $funObj->isUserExist($gebruikersnaamid);  
+            if(!$gebruikersnaam){  
+                $register = $funObj->UserRegister($gebruikersnaamid, $wachtwoord); 
                  //using funObj check if there is already a user with similiar name and if not create user
                 if($register){  
                      echo "<script>alert('Registration Successful')</script>";  
@@ -31,7 +33,7 @@
                     echo "<script>alert('Registration Not Successful')</script>";  
                 }  
             } else {  
-                echo "<script>alert('username Already Exist')</script>";  
+                echo "<script>alert('gebruikersnaam Already Exist')</script>";  
             }  
         } else {  
             echo "<script>alert('Password Not Match')</script>";  
