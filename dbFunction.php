@@ -14,40 +14,38 @@ class dbFunction { //this class makes database connection by allowing creation o
 
     /**
      * Registreer een nieuwe gebruiker.
-     * - Gebruikersnaam moet uniek zijn (wordt elders gecheckt met isUserExist)
-     * - Wachtwoord wordt veilig gehasht met password_hash
-     * - Standaard rol = 'gebruiker'
-     * - Standaard status = 'niet_geverifieerd'
+     * Database-kolommen (zie database.txt):
+     * - gebruikersnaam (varchar)
+     * - wachtwoord (varchar, gehasht)
+     * - rollen (text)          -> hier zetten we bv. 'gebruiker'
+     * - is_geverifieerd (tinyint) -> 0 = niet geverifieerd, 1 = actief
      */
-    public function UserRegister($gebruikersnaam, $wachtwoord, $rol = 'gebruiker', $status = 'niet_geverifieerd') {
-        // Hash password veilig
+    public function UserRegister($gebruikersnaam, $wachtwoord, $rollen = 'gebruiker', $isGeverifieerd = 0) {
+        // Wachtwoord veilig hashen
         $wachtwoordHash = password_hash($wachtwoord, PASSWORD_DEFAULT);
 
-        // Prepare the SQL statement
         $stmt = $this->conn->prepare(
-            "INSERT INTO gebruiker (gebruikersnaam, wachtwoord, rol, status)
-             VALUES (:gebruikersnaam, :wachtwoord, :rol, :status)"
+            "INSERT INTO gebruiker (gebruikersnaam, wachtwoord, rollen, is_geverifieerd)
+             VALUES (:gebruikersnaam, :wachtwoord, :rollen, :is_geverifieerd)"
         );
 
-        // Bind parameters
         $stmt->bindParam(":gebruikersnaam", $gebruikersnaam);
         $stmt->bindParam(":wachtwoord", $wachtwoordHash);
-        $stmt->bindParam(":rol", $rol);
-        $stmt->bindParam(":status", $status);
+        $stmt->bindParam(":rollen", $rollen);
+        $stmt->bindParam(":is_geverifieerd", $isGeverifieerd, PDO::PARAM_INT);
 
-        // Execute and return the result
-        return $stmt->execute(); // returns TRUE or FALSE
+        return $stmt->execute(); // TRUE of FALSE
     }
 
     /**
      * Login gebruiker.
      * - Zoekt gebruiker op gebruikersnaam
      * - Verifieert wachtwoord met password_verify
-     * - Zet basis sessiegegevens, inclusief rol en status
+     * - Laat alleen gebruikers toe met is_geverifieerd = 1 (actief)
      */
     public function Login($gebruikersnaam, $wachtwoord) {
         $stmt = $this->conn->prepare(
-            "SELECT id, gebruikersnaam, wachtwoord, rol, status
+            "SELECT id, gebruikersnaam, wachtwoord, rollen, is_geverifieerd
              FROM gebruiker
              WHERE gebruikersnaam = :gebruikersnaam"
         );
@@ -56,8 +54,12 @@ class dbFunction { //this class makes database connection by allowing creation o
         $stmt->execute();
         $user_data = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        // Controleer of gebruiker bestaat én wachtwoord klopt
-        if ($user_data && password_verify($wachtwoord, $user_data['wachtwoord'])) {
+        // Controleer of gebruiker bestaat, wachtwoord klopt en account geverifieerd is
+        if (
+            $user_data &&
+            password_verify($wachtwoord, $user_data['wachtwoord']) &&
+            (int)$user_data['is_geverifieerd'] === 1
+        ) {
             if (session_status() === PHP_SESSION_NONE) {
                 session_start();
             }
@@ -65,8 +67,8 @@ class dbFunction { //this class makes database connection by allowing creation o
             $_SESSION['login'] = true;
             $_SESSION['uid'] = $user_data['id'];
             $_SESSION['gebruikersnaam'] = $user_data['gebruikersnaam'];
-            $_SESSION['rol'] = $user_data['rol'] ?? null;
-            $_SESSION['status'] = $user_data['status'] ?? null;
+            $_SESSION['rollen'] = $user_data['rollen'] ?? null;
+            $_SESSION['is_geverifieerd'] = (int)$user_data['is_geverifieerd'];
 
             return true;
         }
