@@ -24,13 +24,18 @@ $stmt->execute();
 
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     echo '<tr>';
-    echo '<td table class="table table-striped>' . htmlspecialchars($row['id']) . '</td>';
+    echo '<td>' . htmlspecialchars($row['id']) . '</td>';
     echo '<td>' . htmlspecialchars($row['artikel_id']) . '</td>';
     echo '<td>' . htmlspecialchars($row['locatie']) . '</td>';
     echo '<td>' . htmlspecialchars($row['aantal']) . '</td>';
     echo '<td>' . htmlspecialchars($row['status_id']) . '</td>';
-    echo '<td /table class="table table-striped>' . htmlspecialchars($row['ingeboekt_op']) . '</td>';
+    echo '<td>' . htmlspecialchars($row['ingeboekt_op']) . '</td>';
     echo '</tr>';
 }
+
+$sql = "DELETE FROM voorraad ";
+$stmt = $dbh->prepare($sql);
+$stmt->execute();
+
 
 echo '</table>';
