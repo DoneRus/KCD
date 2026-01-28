@@ -13,33 +13,38 @@ class dbFunction { //this class makes database connection by allowing creation o
         $this->conn = $db->conn;
     }
 
-        public function UserRegister($gebruikersnaam, $wachtwoord) {
-        // Hash password with md5
-        $wachtwoord = md5($wachtwoord);
+public function UserRegister($gebruikersnaam, $wachtwoord) {
+    // Hash password with md5
+    $wachtwoord = md5($wachtwoord);
 
-        $stmt = $this->conn->prepare(
-            "INSERT INTO gebruiker (gebruikersnaam , wachtwoord) VALUES (?, ?)"
-        );
+    // Prepare the SQL statement
+    $stmt = $this->conn->prepare(
+        "INSERT INTO gebruiker (gebruikersnaam, wachtwoord) VALUES (:gebruikersnaam, :wachtwoord)"
+    );
 
-        $stmt->bind_param("ss", $gebruikersnaam, $wachtwoord);
+    // Bind parameters for username and password
+    $stmt->bindParam(":gebruikersnaam", $gebruikersnaam);
+    $stmt->bindParam(":wachtwoord", $wachtwoord);
 
-        return $stmt->execute(); // returns TRUE or FALSE
-    }
+    // Execute and return the result
+    return $stmt->execute(); // returns TRUE or FALSE
+}
 
     public function Login($gebruikersnaam, $wachtwoord) {
         $wachtwoord = md5($wachtwoord);
 
         $stmt = $this->conn->prepare(
-            "SELECT id, gebruikersnaam FROM gebruiker WHERE gebruikersnaam = ? AND wachtwoord = ?"
+            "SELECT id, gebruikersnaam FROM gebruiker WHERE gebruikersnaam = :gebruikersnaam AND wachtwoord = :wachtwoord"
         );
+        $stmt->bindParam( ":gebruikersnaam", $gebruikersnaam);
+        $stmt->bindParam( ":wachtwoord", $wachtwoord);
 
-        $stmt->bind_param("ss", $gebruikersnaam, $wachtwoord);
         $stmt->execute();
 
-        $result = $stmt->get_result();
+        $result = $stmt->fetch();
 
         if ($result->num_rows === 1) {
-            $user_data = $result->fetch_assoc(); //dont forget to learn this
+            $user_data = $result->fetch(PDO::FETCH_ASSOC); //dont forget to learn this similar to fetch_assoc
 
             $_SESSION['login'] = true;
             $_SESSION['uid'] = $user_data['id'];
@@ -51,18 +56,19 @@ class dbFunction { //this class makes database connection by allowing creation o
         return false;
     }
 
-    public function isUserExist($gebruikersnaam) { // check if the user  exists in the database self-explanatory
-        $stmt = $this->conn->prepare(
-            "SELECT id FROM gebruiker WHERE gebruikersnaam = ?"
-        );
-
-        $stmt->bind_param("s", $gebruikersnaam);
-        $stmt->execute();
-
-        $result = $stmt->get_result();
-        return $result->num_rows > 0;
+public function isUserExist($gebruikersnaam) {
+    // Check if the user exists in the database
+    $stmt = $this->conn->prepare("SELECT id FROM gebruiker WHERE gebruikersnaam = :gebruikersnaam");
+    $stmt->bindParam(":gebruikersnaam", $gebruikersnaam);
+    
+    if ($stmt->execute()) {
+        $result = $stmt->fetch();
+        // The fetch() method returns a single row, so check if $result is not false
+        return $result !== false; 
     }
-
+    
+    return false; // Return false if the execution failed
+}
 
 
 }

@@ -5,7 +5,7 @@
     // NOTE $funObj is a database variable that will contain all neccesarry database creds | wachtwoord | gebruikersnaam
     $funObj = new dbFunction();  
     if (isset($_POST['login'])) {
-    $gebruikersnaamid = $_POST['ugebruikersnaamid'] ?? '';
+    $gebruikersnaamid = $_POST['gebruikersnaamid'] ?? '';
     $wachtwoord = $_POST['wachtwoord'] ?? '';
 
     $user = $funObj->Login($gebruikersnaamid, $wachtwoord);
@@ -21,8 +21,8 @@
     if(isset($_POST['register'])){  
         $gebruikersnaamid = $_POST['gebruikersnaamid'];  
         $wachtwoord = $_POST['wachtwoord'];  
-        $confirmwachtwoord = $_POST['confirm_wachtwoord'];  
-        if($wachtwoord == $confirmwachtwoord){  
+        $confirmWachtwoord = $_POST['confirm_wachtwoord'];  
+        if($wachtwoord == $confirmWachtwoord){  
             $gebruikersnaam = $funObj->isUserExist($gebruikersnaamid);  
             if(!$gebruikersnaam){  
                 $register = $funObj->UserRegister($gebruikersnaamid, $wachtwoord); 

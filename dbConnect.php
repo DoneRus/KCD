@@ -3,7 +3,7 @@ class dbConnect
 {
     public $conn;
  
-    public function __construct()
+    public function __construct() // each time this is run when an obj is created
     {
         require_once 'config.php';
             //used to get the credits
