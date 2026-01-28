@@ -6,7 +6,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
-</html>
+<body>
+    <form action="search_results.html" method="GET">
+        <input type="text" name="query" placeholder="Search here...">
+        <button type="submit">Search</button>
+    </form>
+
 <?php
 $user = "root";
 $password = '';
@@ -33,9 +38,12 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     echo '</tr>';
 }
 
-$sql = "DELETE FROM voorraad ";
-$stmt = $dbh->prepare($sql);
-$stmt->execute();
+// $sql = "DELETE FROM voorraad ";
+// $stmt = $dbh->prepare($sql);
+// $stmt->execute();
 
 
 echo '</table>';
+?>
+</body>
+</html>
