@@ -1,6 +1,6 @@
 <?php
 /*
- * Versie: 1.0
+ * Versie: 1.2
  * Datum: 28-01-2026
  * Beschrijving: Functies voor authenticatie (inloggen/uitloggen)
  */

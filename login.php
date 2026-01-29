@@ -1,6 +1,6 @@
 <?php
 /*
- - Versie: 1.3
+ - Versie: 1.2
  - Datum: 28-01-2026
  - Beschrijving: Login pagina
  */

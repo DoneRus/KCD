@@ -1,7 +1,7 @@
 <?php
 /*
  - Versie: 1.3
- - Datum: 28-01-2026
+ - Datum: 29-01-2026
  - Beschrijving: Registratie pagina
  */
 

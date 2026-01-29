@@ -1,7 +1,7 @@
 <?php
 /*
- * Versie: 1.0
- * Datum: 28-01-2026
+ * Versie: 1.1
+ * Datum: 29-01-2026
  * Beschrijving: Header met Bootstrap navigatie
  */
 
