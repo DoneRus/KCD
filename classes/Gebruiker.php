@@ -48,30 +48,24 @@ class Gebruiker {
         ]);
     }
     
-    /*
-     * Reset wachtwoord naar standaard waarde
-     */
-    public function resetWachtwoord($id, $nieuwWachtwoord = 'welkom123') {
-        $hash = password_hash($nieuwWachtwoord, PASSWORD_DEFAULT);
+    // reset password to default value
+    public function resetWachtwoord($id, $nieuwWachtwoord = 'welkom123') { //default value is stupud 
+        $hash = password_hash($nieuwWachtwoord, PASSWORD_DEFAULT); //again hashing but don't know how it works
         $sql = "UPDATE gebruiker SET wachtwoord = :wachtwoord WHERE id = :id";
-        $stmt = $this->db->prepare($sql);
-        return $stmt->execute(['wachtwoord' => $hash, 'id' => $id]);
+        $stmt = $this->db->prepare($sql); //hello, secret message, prepare statement is littaraly a catapult of info to send to the database
+        return $stmt->execute(['wachtwoord' => $hash, 'id' => $id]); //throw the rock in the database using the catapult
     }
     
-    /*
-     * Verwijdert gebruiker
-     */
+// delete user from database 
     public function verwijderen($id) {
         $sql = "DELETE FROM gebruiker WHERE id = :id";
         $stmt = $this->db->prepare($sql);
         return $stmt->execute(['id' => $id]);
     }
     
-    /*
-     * Controleert wachtwoord bij inloggen
-     */
+    // check if entered password matches hashed password in database
     public function controleerWachtwoord($ingevoerd, $hash) {
-        return password_verify($ingevoerd, $hash) || $ingevoerd == $hash;
+        return password_verify($ingevoerd, $hash) || $ingevoerd == $hash; //admin accont works beacuse of this operator || + ingevoerd == $hash
     }
 }
 ?>

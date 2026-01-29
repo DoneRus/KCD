@@ -1,15 +1,11 @@
 <?php
 /*
- * Versie: 1.0
- * Datum: 28-01-2026
- * Beschrijving: Functies voor authenticatie (inloggen/uitloggen)
+  - Versie: 1.2
+  - Datum: 28-01-2026
+  - Beschrijving: Spared from the gebruiker class, formerly dbFunctions.php, now standalone as auth functions
  */
 
-/*
- * Controleert of een gebruiker is ingelogd
- * Start sessie als die nog niet actief is
- * Geeft true terug als gebruiker_id in sessie staat, anders false
- */
+// checks if there are sessions and if not starts one, with the purpose of checking if user is logged in using id
 function isIngelogd() {
     if (session_status() == PHP_SESSION_NONE) {
         session_start();

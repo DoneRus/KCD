@@ -129,9 +129,9 @@ require_once 'includes/header.php';
                                 </td>
                                 <td>
                                     <a href="?reset=<?php echo $g['id']; ?>" class="btn btn-sm btn-warning" onclick="return confirm('Wachtwoord resetten?')">Reset</a>
-                                    <?php if ($g['id'] != $_SESSION['gebruiker_id']): ?>
+                                    <?php if ($g['id'] != $_SESSION['gebruiker_id']): //url button ?>
                                         <a href="?verwijder=<?php echo $g['id']; ?>" class="btn btn-sm btn-danger" onclick="return confirm('Weet je het zeker?')">Verwijder</a>
-                                    <?php endif; ?>
+                                    <?php endif; //url button ?>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
