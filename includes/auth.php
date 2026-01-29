@@ -2,84 +2,52 @@
 /*
  * Versie: 1.0
  * Datum: 28-01-2026
-    spread out dbFunction.php file 
+ * Beschrijving: Functies voor authenticatie (inloggen/uitloggen)
  */
 
-class Gebruiker {
-    public $id;
-    public $gebruikersnaam;
-    public $wachtwoord;
-    public $rollen;
-    public $is_geverifieerd;
-    
-    private $db;
-    
-    /*
-     * Constructor: ontvangt database connectie
-     */
-    public function __construct($db) {
-        $this->db = $db;
+/*
+ * Controleert of een gebruiker is ingelogd
+ * Start sessie als die nog niet actief is
+ * Geeft true terug als gebruiker_id in sessie staat, anders false
+ */
+function isIngelogd() {
+    if (session_status() == PHP_SESSION_NONE) {
+        session_start();
     }
-    
-    /*
-     * Haalt alle gebruikers op
-     */
-    public function haalAlleOp() {
-        $sql = "SELECT id, gebruikersnaam, rollen, is_geverifieerd FROM gebruiker ORDER BY id";
-        $stmt = $this->db->query($sql);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    return isset($_SESSION['gebruiker_id']);
+}
+
+/*
+ * Controleert of de ingelogde gebruiker een admin is
+ * Geeft true terug als rol 'admin' is, anders false
+ */
+function isAdmin() {
+    if (!isIngelogd()) {
+        return false;
     }
-    
-    /*
-     * Zoekt gebruiker op gebruikersnaam
-     * Gebruikt voor inloggen
-     */
-    public function zoekOpGebruikersnaam($gebruikersnaam) {
-        $sql = "SELECT * FROM gebruiker WHERE gebruikersnaam = :gebruikersnaam";
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute(['gebruikersnaam' => $gebruikersnaam]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+    return $_SESSION['rol'] == 'admin';
+}
+
+/*
+ * Beschermt een pagina voor niet-ingelogde gebruikers
+ * Stuurt bezoeker naar login.php als niet ingelogd
+ */
+function checkLogin() {
+    if (!isIngelogd()) {
+        header("Location: login.php");
+        exit;
     }
-    
-    /*
-     * Voegt nieuwe gebruiker toe
-     */
-    public function toevoegen($gebruikersnaam, $wachtwoord, $rol, $is_geverifieerd = 0) {
-        $hash = password_hash($wachtwoord, PASSWORD_DEFAULT);
-        $sql = "INSERT INTO gebruiker (gebruikersnaam, wachtwoord, rollen, is_geverifieerd) VALUES (:gebruikersnaam, :wachtwoord, :rollen, :is_geverifieerd)";
-        $stmt = $this->db->prepare($sql);
-        return $stmt->execute([
-            'gebruikersnaam' => $gebruikersnaam,
-            'wachtwoord' => $hash,
-            'rollen' => $rol,
-            'is_geverifieerd' => $is_geverifieerd
-        ]);
-    }
-    
-    /*
-     * Reset wachtwoord naar standaard waarde
-     */
-    public function resetWachtwoord($id, $nieuwWachtwoord = 'welkom123') {
-        $hash = password_hash($nieuwWachtwoord, PASSWORD_DEFAULT);
-        $sql = "UPDATE gebruiker SET wachtwoord = :wachtwoord WHERE id = :id";
-        $stmt = $this->db->prepare($sql);
-        return $stmt->execute(['wachtwoord' => $hash, 'id' => $id]);
-    }
-    
-    /*
-     * Verwijdert gebruiker
-     */
-    public function verwijderen($id) {
-        $sql = "DELETE FROM gebruiker WHERE id = :id";
-        $stmt = $this->db->prepare($sql);
-        return $stmt->execute(['id' => $id]);
-    }
-    
-    /*
-     * Controleert wachtwoord bij inloggen
-     */
-    public function controleerWachtwoord($ingevoerd, $hash) {
-        return password_verify($ingevoerd, $hash) || $ingevoerd == $hash;
+}
+
+/*
+ * Beschermt een pagina voor niet-admin gebruikers
+ * Stuurt bezoeker naar index.php als geen admin
+ */
+function checkAdmin() {
+    checkLogin();
+    if (!isAdmin()) {
+        header("Location: index.php");
+        exit;
     }
 }
 ?>
