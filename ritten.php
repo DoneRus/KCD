@@ -13,7 +13,7 @@ require_once 'includes/auth.php';
 
 checkLogin();
 
-// Database en objecten aanmaken
+/* Database en objecten aanmaken zoals alle andere pagina's*/
 $database = new Database();
 $db = $database->getConnection();
 $planning = new Planning($db);
@@ -25,14 +25,14 @@ $meldingType = "";
 $bewerken = false;
 $bewerkPlanning = null;
 
-// Verwijderen
+/*Verwijderen*/
 if (isset($_GET['verwijder'])) {
     $planning->verwijderen($_GET['verwijder']);
     $melding = "Rit verwijderd!";
     $meldingType = "success";
 }
 
-// Bewerken ophalen
+/*Bewerken ophalen*/
 if (isset($_GET['bewerk'])) {
     $bewerkPlanning = $planning->haalOpById($_GET['bewerk']);
     if ($bewerkPlanning) {
@@ -40,7 +40,7 @@ if (isset($_GET['bewerk'])) {
     }
 }
 
-// Formulier verwerken
+/* Formulier verwerken */
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $artikel_id = $_POST['artikel_id'];
     $klant_id = $_POST['klant_id'];
@@ -65,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 
-// Data ophalen
+/* Data ophalen hier */
 $planningen = $planning->haalAlleOp();
 $artikelen = $artikel->haalAlleOp();
 $klanten = $klant->haalAlleOp();
