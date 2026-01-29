@@ -1,8 +1,8 @@
 <?php
 /*
- * Versie: 1.0
- * Datum: 28-01-2026
- * Beschrijving: Gebruiker class voor authenticatie en gebruikersbeheer
+ - Versie: 1.0
+ - Datum: 28-01-2026
+ - Beschrijving: Gebruiker class for auth and user management
  */
 
 class Gebruiker {
@@ -14,26 +14,20 @@ class Gebruiker {
     
     private $db;
     
-    /*
-     * Constructor: ontvangt database connectie
-     */
+    // contrsuctor gets db connection, got confused here, but includes in other files work as intended if
+    //  database.php is also included
     public function __construct($db) {
         $this->db = $db;
     }
     
-    /*
-     * Haalt alle gebruikers op
-     */
+    // gets all info from database, so it is read
     public function haalAlleOp() {
         $sql = "SELECT id, gebruikersnaam, rollen, is_geverifieerd FROM gebruiker ORDER BY id";
         $stmt = $this->db->query($sql);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
     
-    /*
-     * Zoekt gebruiker op gebruikersnaam
-     * Gebruikt voor inloggen
-     */
+    // search fir akdready existing user by username
     public function zoekOpGebruikersnaam($gebruikersnaam) {
         $sql = "SELECT * FROM gebruiker WHERE gebruikersnaam = :gebruikersnaam";
         $stmt = $this->db->prepare($sql);
@@ -41,11 +35,9 @@ class Gebruiker {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
     
-    /*
-     * Voegt nieuwe gebruiker toe
-     */
+    // add new user to database with hashed password
     public function toevoegen($gebruikersnaam, $wachtwoord, $rol, $is_geverifieerd = 0) {
-        $hash = password_hash($wachtwoord, PASSWORD_DEFAULT);
+        $hash = password_hash($wachtwoord, PASSWORD_DEFAULT); // this hashes the password, don't know how it works
         $sql = "INSERT INTO gebruiker (gebruikersnaam, wachtwoord, rollen, is_geverifieerd) VALUES (:gebruikersnaam, :wachtwoord, :rollen, :is_geverifieerd)";
         $stmt = $this->db->prepare($sql);
         return $stmt->execute([

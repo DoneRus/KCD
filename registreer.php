@@ -1,8 +1,8 @@
 <?php
 /*
- * Versie: 1.0
- * Datum: 28-01-2026
- * Beschrijving: Registratie pagina
+ - Versie: 1.3
+ - Datum: 28-01-2026
+ - Beschrijving: Registratie pagina
  */
 
 require_once 'classes/Database.php';
@@ -13,34 +13,33 @@ session_start();
 $melding = "";
 $meldingType = "";
 
-// Formulier verwerken
+// Form(storm) works
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $gebruikersnaam = trim($_POST['gebruikersnaam']);
     $wachtwoord = $_POST['wachtwoord'];
     $wachtwoord2 = $_POST['wachtwoord2'];
     
-    // Validatie
-    if (empty($gebruikersnaam) || empty($wachtwoord)) {
+    if (empty($gebruikersnaam) || empty($wachtwoord)) { //if either|| fields are empty
         $melding = "Vul alle velden in.";
         $meldingType = "danger";
-    } elseif ($wachtwoord != $wachtwoord2) {
+    } elseif ($wachtwoord != $wachtwoord2) { // password don't match, it's littrally =/ in middle
         $melding = "Wachtwoorden komen niet overeen.";
         $meldingType = "danger";
-    } elseif (strlen($wachtwoord) < 6) {
+    } elseif (strlen($wachtwoord) < 6) { // password length check
         $melding = "Wachtwoord moet minimaal 6 tekens zijn.";
         $meldingType = "danger";
     } else {
-        // Database en Gebruiker object
+        // Intersection with database and gebruiker classes/files
         $database = new Database();
         $db = $database->getConnection();
         $gebruiker = new Gebruiker($db);
         
-        // Check of gebruikersnaam al bestaat
+        // Check for existing username
         if ($gebruiker->zoekOpGebruikersnaam($gebruikersnaam)) {
             $melding = "Deze gebruikersnaam is al in gebruik.";
             $meldingType = "danger";
         } else {
-            // Gebruiker aanmaken (niet geverifieerd)
+            // makes user othewise, but you can't log in yet
             $gebruiker->toevoegen($gebruikersnaam, $wachtwoord, 'medewerker', 0);
             $melding = "Account aangemaakt! Wacht op goedkeuring van een admin.";
             $meldingType = "success";

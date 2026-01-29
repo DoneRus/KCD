@@ -1,8 +1,8 @@
 <?php
 /*
- * Versie: 1.0
- * Datum: 28-01-2026
- * Beschrijving: Login pagina
+ - Versie: 1.3
+ - Datum: 28-01-2026
+ - Beschrijving: Login pagina
  */
 
 require_once 'classes/Database.php';
@@ -10,7 +10,7 @@ require_once 'classes/Gebruiker.php';
 
 session_start();
 
-// Al ingelogd? Ga naar home
+// header to restrict access if already logged in
 if (isset($_SESSION['gebruiker_id'])) {
     header("Location: index.php");
     exit;
@@ -18,25 +18,25 @@ if (isset($_SESSION['gebruiker_id'])) {
 
 $foutmelding = "";
 
-// Formulier verwerken
+// Formulier works
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $gebruikersnaam = trim($_POST['gebruikersnaam']);
+    $gebruikersnaam = trim($_POST['gebruikersnaam']); //get rid of wastespace
     $wachtwoord = $_POST['wachtwoord'];
     
     if (empty($gebruikersnaam) || empty($wachtwoord)) {
         $foutmelding = "Vul alle velden in.";
     } else {
-        // Database en Gebruiker object
+        // Database and Gebruiker object
         $database = new Database();
-        $db = $database->getConnection();
+        $db = $database->getConnection(); // HERE is AGAIN where the gebruiker en database files are intersected
         $gebruiker = new Gebruiker($db);
         
-        // Zoek gebruiker
+        // check  for already existing user
         $gevonden = $gebruiker->zoekOpGebruikersnaam($gebruikersnaam);
         
-        if ($gevonden && $gebruiker->controleerWachtwoord($wachtwoord, $gevonden['wachtwoord'])) {
-            if ($gevonden['is_geverifieerd'] == 1) {
-                // Login succesvol
+        if ($gevonden && $gebruiker->controleerWachtwoord($wachtwoord, $gevonden['wachtwoord'])) { //if user found and password matches 
+            if ($gevonden['is_geverifieerd'] == 1) { //then do this, only verified users can login, admins verify
+                // Login is good, remember this in session
                 $_SESSION['gebruiker_id'] = $gevonden['id'];
                 $_SESSION['gebruikersnaam'] = $gevonden['gebruikersnaam'];
                 $_SESSION['rol'] = $gevonden['rollen'];

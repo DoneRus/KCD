@@ -1,6 +1,10 @@
 <?php
 
-// V2 database connectie, ik gebruik nu andere credits
+/*
+ - Versie: 1.0
+ - Datum: 28-01-2026
+ - Beschrijving: Gebruiker class for auth and user management
+ */ //NOTE: FOREVER UNCHANGED
 
 class Database {
     public $conn;
