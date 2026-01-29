@@ -2,7 +2,7 @@
 /*
  * Versie: 1.0
  * Datum: 28-01-2026
- * Beschrijving: Login pagina
+ * Beschrijving: Registratie pagina
  */
 
 require_once 'classes/Database.php';
@@ -10,44 +10,40 @@ require_once 'classes/Gebruiker.php';
 
 session_start();
 
-// Al ingelogd? Ga naar home
-if (isset($_SESSION['gebruiker_id'])) {
-    header("Location: index.php");
-    exit;
-}
-
-$foutmelding = "";
+$melding = "";
+$meldingType = "";
 
 // Formulier verwerken
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $gebruikersnaam = trim($_POST['gebruikersnaam']);
     $wachtwoord = $_POST['wachtwoord'];
+    $wachtwoord2 = $_POST['wachtwoord2'];
     
+    // Validatie
     if (empty($gebruikersnaam) || empty($wachtwoord)) {
-        $foutmelding = "Vul alle velden in.";
+        $melding = "Vul alle velden in.";
+        $meldingType = "danger";
+    } elseif ($wachtwoord != $wachtwoord2) {
+        $melding = "Wachtwoorden komen niet overeen.";
+        $meldingType = "danger";
+    } elseif (strlen($wachtwoord) < 6) {
+        $melding = "Wachtwoord moet minimaal 6 tekens zijn.";
+        $meldingType = "danger";
     } else {
         // Database en Gebruiker object
         $database = new Database();
         $db = $database->getConnection();
         $gebruiker = new Gebruiker($db);
         
-        // Zoek gebruiker
-        $gevonden = $gebruiker->zoekOpGebruikersnaam($gebruikersnaam);
-        
-        if ($gevonden && $gebruiker->controleerWachtwoord($wachtwoord, $gevonden['wachtwoord'])) {
-            if ($gevonden['is_geverifieerd'] == 1) {
-                // Login succesvol
-                $_SESSION['gebruiker_id'] = $gevonden['id'];
-                $_SESSION['gebruikersnaam'] = $gevonden['gebruikersnaam'];
-                $_SESSION['rol'] = $gevonden['rollen'];
-                
-                header("Location: index.php");
-                exit;
-            } else {
-                $foutmelding = "Je account is nog niet geverifieerd.";
-            }
+        // Check of gebruikersnaam al bestaat
+        if ($gebruiker->zoekOpGebruikersnaam($gebruikersnaam)) {
+            $melding = "Deze gebruikersnaam is al in gebruik.";
+            $meldingType = "danger";
         } else {
-            $foutmelding = "Ongeldige gebruikersnaam of wachtwoord.";
+            // Gebruiker aanmaken (niet geverifieerd)
+            $gebruiker->toevoegen($gebruikersnaam, $wachtwoord, 'medewerker', 0);
+            $melding = "Account aangemaakt! Wacht op goedkeuring van een admin.";
+            $meldingType = "success";
         }
     }
 }
@@ -57,21 +53,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inloggen - Kringloop Duurzaam</title>
+    <title>Registreren - Kringloop Duurzaam</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
 
 <div class="container">
     <div class="row justify-content-center mt-5">
-        <div class="col-md-4">
+        <div class="col-md-5">
             <div class="card shadow">
                 <div class="card-header bg-primary text-white text-center">
-                    <h4>Inloggen</h4>
+                    <h4>Registreren</h4>
                 </div>
                 <div class="card-body">
-                    <?php if (!empty($foutmelding)): ?>
-                        <div class="alert alert-danger"><?php echo $foutmelding; ?></div>
+                    <?php if (!empty($melding)): ?>
+                        <div class="alert alert-<?php echo $meldingType; ?>"><?php echo $melding; ?></div>
                     <?php endif; ?>
                     
                     <form method="POST">
@@ -82,15 +78,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <div class="mb-3">
                             <label class="form-label">Wachtwoord</label>
                             <input type="password" class="form-control" name="wachtwoord" required>
+                            <small class="text-muted">Minimaal 6 tekens</small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Wachtwoord bevestigen</label>
+                            <input type="password" class="form-control" name="wachtwoord2" required>
                         </div>
                         <div class="d-grid">
-                            <button type="submit" class="btn btn-primary">Inloggen</button>
+                            <button type="submit" class="btn btn-primary">Registreren</button>
                         </div>
                     </form>
                     
                     <hr>
                     <p class="text-center mb-0">
-                        Nog geen account? <a href="registreer.php">Registreren</a>
+                        Al een account? <a href="login.php">Inloggen</a>
                     </p>
                 </div>
             </div>

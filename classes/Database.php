@@ -1,32 +1,29 @@
 <?php
-class dbConnect
-{
+
+// V2 database connectie, ik gebruik nu andere credits
+
+class Database {
     public $conn;
- 
-    public function __construct() // each time this is run when an obj is created
-    {
-        require_once 'config.php';
-            //used to get the credits
+    
+    // this will help with the connection to the database on new pages
+    public function __construct() {
+        require_once __DIR__ . '/../config.php';
+        
         try {
-            $dsn = "mysql:host=" . DB_HOST . ";dbname=" . DB_DATABASE . ";charset=utf8mb4";
- 
             $this->conn = new PDO(
-                $dsn,
-                DB_USER,
-                DB_PASSWORD,
-                [
-                    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                    PDO::ATTR_EMULATE_PREPARES   => false,
-                ]
-            ); // credits are here
-        } catch (PDOException $e) {
-            die("Database connection failed: " . $e->getMessage());
-        } //error generation
+                "mysql:host=$dbHost;dbname=$dbNaam;charset=utf8",
+                $dbGebruiker,
+                $dbWachtwoord
+            );
+            $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); // Set error mode to exceptions, ok.
+        } catch (PDOException $e) { // Catch any errors
+            die("Database connectie mislukt: " . $e->getMessage());
+        }
     }
- 
-    public function close()
-    {
-        $this->conn = null; // end something PDO
+    
+
+    public function getConnection() { // php inner function that is self-explanatory
+        return $this->conn;
     }
 }
+?>
