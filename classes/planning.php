@@ -15,16 +15,14 @@ class Planning {
     
     private $db;
     
-    /*
-     * Constructor: ontvangt database connectie
-     */
+    
+     /* Cons ontvangt de database connectie*/
     public function __construct($db) {
         $this->db = $db;
     }
     
-    /*
-     * Haalt alle ritten op met artikel en klant gegevens
-     */
+    
+     /* Haalt alle ritten op met artikel en klant gegevens*/
     public function haalAlleOp() {
         $sql = "SELECT planning.*, artikel.naam as artikel_naam, klant.naam as klant_naam, klant.adres as klant_adres, klant.plaats as klant_plaats
                 FROM planning 
@@ -35,9 +33,7 @@ class Planning {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
     
-    /*
-     * Haalt één rit op basis van ID
-     */
+    /*Haalt één rit op basis van ID*/
     public function haalOpById($id) {
         $sql = "SELECT * FROM planning WHERE id = :id";
         $stmt = $this->db->prepare($sql);
@@ -45,9 +41,7 @@ class Planning {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
     
-    /*
-     * Voegt nieuwe rit toe
-     */
+    /*Voegt nieuwe rit toe*/
     public function toevoegen($artikel_id, $klant_id, $kenteken, $ophalen_of_bezorgen, $afspraak_op) {
         $sql = "INSERT INTO planning (artikel_id, klant_id, kenteken, ophalen_of_bezorgen, afspraak_op) VALUES (:artikel_id, :klant_id, :kenteken, :ophalen_of_bezorgen, :afspraak_op)";
         $stmt = $this->db->prepare($sql);
@@ -60,9 +54,7 @@ class Planning {
         ]);
     }
     
-    /*
-     * Werkt rit bij
-     */
+    /*Werkt rit bij*/
     public function bijwerken($id, $artikel_id, $klant_id, $kenteken, $ophalen_of_bezorgen, $afspraak_op) {
         $sql = "UPDATE planning SET artikel_id = :artikel_id, klant_id = :klant_id, kenteken = :kenteken, ophalen_of_bezorgen = :ophalen_of_bezorgen, afspraak_op = :afspraak_op WHERE id = :id";
         $stmt = $this->db->prepare($sql);
@@ -76,9 +68,7 @@ class Planning {
         ]);
     }
     
-    /*
-     * Verwijdert rit
-     */
+/*Verwiijdert de gekozen rit*/
     public function verwijderen($id) {
         $sql = "DELETE FROM planning WHERE id = :id";
         $stmt = $this->db->prepare($sql);

@@ -124,7 +124,8 @@ require_once 'includes/header.php';
     </div>
 </div>
 
-<!-- Modal voor toevoegen -->
+<!-- modal voor toevoegen
+ -->
 <div class="modal fade" id="planningModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -176,7 +177,7 @@ require_once 'includes/header.php';
     </div>
 </div>
 
-<!-- Modal voor bewerken -->
+<!-- modal voor beewerken -->
 <?php if ($bewerken && $bewerkPlanning): ?>
 <div class="modal fade show" style="display: block; background: rgba(0,0,0,0.5);">
     <div class="modal-dialog">
