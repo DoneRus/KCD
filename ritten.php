@@ -15,7 +15,7 @@ checkLogin();
 
 // Database en objecten aanmaken
 $database = new Database();
-$db = $database->getConnection();
+$db = $database->getConnection(); 
 $planning = new Planning($db);
 $artikel = new Artikel($db);
 $klant = new Klant($db);

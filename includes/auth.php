@@ -12,11 +12,7 @@ function isIngelogd() {
     }
     return isset($_SESSION['gebruiker_id']);
 }
-
-/*
- * Controleert of de ingelogde gebruiker een admin is
- * Geeft true terug als rol 'admin' is, anders false
- */
+// checks if logged in user is admin by checking session role
 function isAdmin() {
     if (!isIngelogd()) {
         return false;
@@ -24,10 +20,7 @@ function isAdmin() {
     return $_SESSION['rol'] == 'admin';
 }
 
-/*
- * Beschermt een pagina voor niet-ingelogde gebruikers
- * Stuurt bezoeker naar login.php als niet ingelogd
- */
+// sends you somewhere else if not logged in
 function checkLogin() {
     if (!isIngelogd()) {
         header("Location: login.php");
@@ -35,10 +28,7 @@ function checkLogin() {
     }
 }
 
-/*
- * Beschermt een pagina voor niet-admin gebruikers
- * Stuurt bezoeker naar index.php als geen admin
- */
+// sends you somewhere else if not admin
 function checkAdmin() {
     checkLogin();
     if (!isAdmin()) {
