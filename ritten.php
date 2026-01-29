@@ -1,311 +1,232 @@
 <?php
-session_start();
+/*
+ * Versie: 1.0
+ * Datum: 28-01-2026
+ * Beschrijving: Ritten planning pagina
+ */
 
-// start ritten array als die nog niet bestaat
-if (!isset($_SESSION['ritten'])) {
-    $_SESSION['ritten'] = array();
+require_once 'classes/Database.php';
+require_once 'classes/Planning.php';
+require_once 'classes/Artikel.php';
+require_once 'classes/Klant.php';
+require_once 'includes/auth.php';
+
+checkLogin();
+
+// Database en objecten aanmaken
+$database = new Database();
+$db = $database->getConnection();
+$planning = new Planning($db);
+$artikel = new Artikel($db);
+$klant = new Klant($db);
+
+$melding = "";
+$meldingType = "";
+$bewerken = false;
+$bewerkPlanning = null;
+
+// Verwijderen
+if (isset($_GET['verwijder'])) {
+    $planning->verwijderen($_GET['verwijder']);
+    $melding = "Rit verwijderd!";
+    $meldingType = "success";
 }
 
-// nieuwe ritten toevoegen
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_rit'])) {
-    $bestemming = $_POST['bestemming'] ?? '';
-    $klant = $_POST['klant'] ?? '';
-    $datum = $_POST['datum'] ?? '';
+// Bewerken ophalen
+if (isset($_GET['bewerk'])) {
+    $bewerkPlanning = $planning->haalOpById($_GET['bewerk']);
+    if ($bewerkPlanning) {
+        $bewerken = true;
+    }
+}
+
+// Formulier verwerken
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $artikel_id = $_POST['artikel_id'];
+    $klant_id = $_POST['klant_id'];
+    $kenteken = trim($_POST['kenteken']);
+    $ophalen_of_bezorgen = $_POST['ophalen_of_bezorgen'];
+    $afspraak_op = $_POST['afspraak_op'];
+    $id = isset($_POST['id']) ? $_POST['id'] : null;
     
-    if (!empty($bestemming) && !empty($klant) && !empty($datum)) {
-        $id = time();
-        $_SESSION['ritten'][$id] = array(
-            'id' => $id,
-            'bestemming' => $bestemming,
-            'klant' => $klant,
-            'datum' => $datum,
-            'afgeleverd' => false,
-            'items' => array()
-        );
-        // Redirect om POST data opnieuw in te dienen te voorkomen
-        header('Location: ritten.php');
-        exit();
-    }
-}
-
-// Item toevoegen aan een rit
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_item'])) {
-    $rit_id = $_POST['rit_id'] ?? '';
-    $item_naam = $_POST['item_naam'] ?? '';
-    $item_hoeveelheid = $_POST['item_hoeveelheid'] ?? '1';
-    
-    if (!empty($item_naam) && isset($_SESSION['ritten'][$rit_id])) {
-        $item_id = time() . rand(0, 999);
-        $_SESSION['ritten'][$rit_id]['items'][$item_id] = array(
-            'id' => $item_id,
-            'naam' => $item_naam,
-            'hoeveelheid' => $item_hoeveelheid,
-            'bezorgd' => false
-        );
-        // Redirect om POST data opnieuw in te dienen te voorkomen
-        header('Location: ritten.php');
-        exit();
-    }
-}
-
-// Item als bezorgd markeren
-if (isset($_GET['complete_item']) && isset($_GET['rit_id'])) {
-    $rit_id = $_GET['rit_id'];
-    $item_id = $_GET['complete_item'];
-    if (isset($_SESSION['ritten'][$rit_id]) && isset($_SESSION['ritten'][$rit_id]['items'][$item_id])) {
-        $_SESSION['ritten'][$rit_id]['items'][$item_id]['bezorgd'] = true;
-    }
-}
-
-// Item verwijderen
-if (isset($_GET['delete_item']) && isset($_GET['rit_id'])) {
-    $rit_id = $_GET['rit_id'];
-    $item_id = $_GET['delete_item'];
-    if (isset($_SESSION['ritten'][$rit_id]) && isset($_SESSION['ritten'][$rit_id]['items'][$item_id])) {
-        unset($_SESSION['ritten'][$rit_id]['items'][$item_id]);
-    }
-}
-
-// Hele rit als afgeleverd markeren
-if (isset($_GET['complete'])) {
-    $rit_id = $_GET['complete'];
-    if (isset($_SESSION['ritten'][$rit_id])) {
-        $_SESSION['ritten'][$rit_id]['afgeleverd'] = true;
-        // Markeer alle items ook als bezorgd
-        foreach ($_SESSION['ritten'][$rit_id]['items'] as &$item) {
-            $item['bezorgd'] = true;
+    if (empty($artikel_id) || empty($klant_id) || empty($kenteken) || empty($afspraak_op)) {
+        $melding = "Vul alle velden in.";
+        $meldingType = "danger";
+    } else {
+        if ($id) {
+            $planning->bijwerken($id, $artikel_id, $klant_id, $kenteken, $ophalen_of_bezorgen, $afspraak_op);
+            $melding = "Rit bijgewerkt!";
+        } else {
+            $planning->toevoegen($artikel_id, $klant_id, $kenteken, $ophalen_of_bezorgen, $afspraak_op);
+            $melding = "Rit toegevoegd!";
         }
-        unset($item); // unset reference
+        $meldingType = "success";
+        $bewerken = false;
     }
 }
 
-// Rit verwijderen
-if (isset($_GET['delete'])) {
-    $rit_id = $_GET['delete'];
-    if (isset($_SESSION['ritten'][$rit_id])) {
-        unset($_SESSION['ritten'][$rit_id]);
-    }
-}
+// Data ophalen
+$planningen = $planning->haalAlleOp();
+$artikelen = $artikel->haalAlleOp();
+$klanten = $klant->haalAlleOp();
+
+require_once 'includes/header.php';
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ritten Management</title>
-    <!-- Bootstrap CSS -->
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-        rel="stylesheet"
-        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
-        crossorigin="anonymous"
-    >
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <!-- Bootstrap navigatiebalk (zelfde als index.php) -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="index.php">Kringloop centrum</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
 
-            <div class="collapse navbar-collapse" id="mainNavbar">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link" href="index.php">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="ritten.php">Ritten</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="voorraad.php">Voorraad beheer</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="admin.php">Admin</a>
-                    </li>
-                </ul>
-                <a href="login.php" class="btn btn-outline-light rounded-pill">Aanmelden</a>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Ritten Planning</h1>
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#planningModal">Nieuw</button>
+</div>
+
+<?php if (!empty($melding)): ?>
+    <div class="alert alert-<?php echo $meldingType; ?>"><?php echo $melding; ?></div>
+<?php endif; ?>
+
+<div class="card">
+    <div class="card-body">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Datum/Tijd</th>
+                    <th>Type</th>
+                    <th>Klant</th>
+                    <th>Adres</th>
+                    <th>Artikel</th>
+                    <th>Kenteken</th>
+                    <th>Acties</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($planningen as $plan): ?>
+                    <tr>
+                        <td><?php echo $plan['id']; ?></td>
+                        <td><?php echo date('d-m-Y H:i', strtotime($plan['afspraak_op'])); ?></td>
+                        <td>
+                            <?php if ($plan['ophalen_of_bezorgen'] == 'ophalen'): ?>
+                                <span class="badge bg-info">Ophalen</span>
+                            <?php else: ?>
+                                <span class="badge bg-success">Bezorgen</span>
+                            <?php endif; ?>
+                        </td>
+                        <td><?php echo htmlspecialchars($plan['klant_naam'] ?? 'Onbekend'); ?></td>
+                        <td><?php echo htmlspecialchars(($plan['klant_adres'] ?? '') . ', ' . ($plan['klant_plaats'] ?? '')); ?></td>
+                        <td><?php echo htmlspecialchars($plan['artikel_naam'] ?? 'Onbekend'); ?></td>
+                        <td><?php echo htmlspecialchars($plan['kenteken']); ?></td>
+                        <td>
+                            <a href="?bewerk=<?php echo $plan['id']; ?>" class="btn btn-sm btn-warning">Bewerken</a>
+                            <a href="?verwijder=<?php echo $plan['id']; ?>" class="btn btn-sm btn-danger" onclick="return confirm('Weet je het zeker?')">Verwijderen</a>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal voor toevoegen -->
+<div class="modal fade" id="planningModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Nieuwe Rit</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-        </div>
-    </nav>
-
-    <!-- Ritten management pagina -->
-    <div class="page-container">
-        <div class="ritten-section">
-            <h1>Ritten Beheer</h1>
-            
-            <!-- Formulier om een niewe rit toee te voegen -->
-            <div class="rit-form-container">
-                <h2>Nieuwe rit toevoegen</h2>
-                <form method="POST" class="rit-form">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="bestemming">Bestemming</label>
-                            <input type="text" id="bestemming" name="bestemming" placeholder="Bijv. Amsterdam" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="klant">Klant</label>
-                            <input type="text" id="klant" name="klant" placeholder="Bedrijfsnaam" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="datum">Datum</label>
-                            <input type="date" id="datum" name="datum" required>
-                        </div>
-                        <button type="submit" name="add_rit" class="btn-add">Rit toevoegen</button>
+            <form method="POST">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Type</label>
+                        <select class="form-select" name="ophalen_of_bezorgen" required>
+                            <option value="ophalen">Ophalen</option>
+                            <option value="bezorgen">Bezorgen</option>
+                        </select>
                     </div>
-                </form>
-            </div>
-
-            <!-- Accordion met alle ritten -->
-            <div class="ritten-accordion-container">
-                <h2>Geplande Ritten</h2>
-                <?php if (count($_SESSION['ritten']) > 0): ?>
-                    <div class="accordion">
-                        <?php foreach ($_SESSION['ritten'] as $rit): ?>
-                            <!-- Accordion item header -->
-                            <div class="accordion-item <?php echo $rit['afgeleverd'] ? 'afgeleverd' : ''; ?>">
-                                <!-- Kliik hier om uit te vouwen (toggle) -->
-                                <button class="accordion-header" onclick="toggleAccordion(this)">
-                                    <span class="accordion-arrow">▶</span>
-                                    <span class="accordion-date"><?php echo date('d-m-Y', strtotime($rit['datum'])); ?></span>
-                                    <span class="accordion-dest"><?php echo htmlspecialchars($rit['bestemming']); ?></span>
-                                    <span class="accordion-klant"><?php echo htmlspecialchars($rit['klant']); ?></span>
-                                    <span class="accordion-status">
-                                        <?php if ($rit['afgeleverd']): ?>
-                                            <span class="status-badge afgeleverd">✓ Afgeleverd</span>
-                                        <?php else: ?>
-                                            <span class="status-badge in-transit">In transit</span>
-                                        <?php endif; ?>
-                                    </span>
-                                </button>
-
-                                <!-- Accordion content - uitvouwbare gedeelte -->
-                                <div class="accordion-content">
-                                    <!-- Items tbel (de items die moeten bezorgd worden) -->
-                                    <div class="items-section">
-                                        <h3>Items voor deze rit</h3>
-                                        
-                                        <?php if (count($rit['items']) > 0): ?>
-                                            <table class="items-table">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Item</th>
-                                                        <th>Hoeveelheid</th>
-                                                        <th>Status</th>
-                                                        <th>Acties</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <?php foreach ($rit['items'] as $item): ?>
-                                                        <tr class="<?php echo $item['bezorgd'] ? 'item-bezorgd' : ''; ?>">
-                                                            <td><?php echo htmlspecialchars($item['naam']); ?></td>
-                                                            <td><?php echo htmlspecialchars($item['hoeveelheid']); ?></td>
-                                                            <td>
-                                                                <?php if ($item['bezorgd']): ?>
-                                                                    <span class="status-badge afgeleverd">✓ Bezorgd</span>
-                                                                <?php else: ?>
-                                                                    <span class="status-badge in-transit">Te bezorgen</span>
-                                                                <?php endif; ?>
-                                                            </td>
-                                                            <td>
-                                                                <div class="item-actions">
-                                                                    <button type="button" class="btn-item btn-item-danger" onclick="deleteItem(<?php echo $rit['id']; ?>, <?php echo $item['id']; ?>)">Verwijderen</button>
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                    <?php endforeach; ?>
-                                                </tbody>
-                                            </table>
-                                        <?php else: ?>
-                                            <p class="no-items">Geen items toegevoegd voor deze rit</p>
-                                        <?php endif; ?>
-
-                                        <!-- Voeg hier een item toe-->
-                                        <div class="add-item-form">
-                                            <h4>Item toevoegen</h4>
-                                            <form method="POST" class="item-form">
-                                                <input type="hidden" name="rit_id" value="<?php echo $rit['id']; ?>">
-                                                <div class="item-form-row">
-                                                    <input type="text" name="item_naam" placeholder="Item naam" required>
-                                                    <input type="number" name="item_hoeveelheid" value="1" min="1" style="width: 80px;">
-                                                    <button type="submit" name="add_item" class="btn-add-item">Toevoegen</button>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
-
-                                    <!-- Acties voor deze rit -->
-                                    <div class="rit-actions">
-                                        <?php if (!$rit['afgeleverd']): ?>
-                                            <button type="button" class="btn btn-success" onclick="completeRit(<?php echo $rit['id']; ?>)">Hele rit als afgeleverd</button>
-                                        <?php endif; ?>
-                                        <button type="button" class="btn btn-danger" onclick="deleteRit(<?php echo $rit['id']; ?>)">Rit verwijderen</button>
-                                    </div>
-                                </div>
-                            </div>
-                        <?php endforeach; ?>
+                    <div class="mb-3">
+                        <label class="form-label">Klant</label>
+                        <select class="form-select" name="klant_id" required>
+                            <option value="">-- Kies --</option>
+                            <?php foreach ($klanten as $k): ?>
+                                <option value="<?php echo $k['id']; ?>"><?php echo htmlspecialchars($k['naam'] . ' - ' . $k['adres']); ?></option>
+                            <?php endforeach; ?>
+                        </select>
                     </div>
-                <?php else: ?>
-                    <!-- Laat dit zien als er geen rien zijn -->
-                    <div class="empty-state">
-                        <p>Geen ritten gepland. Voeg een rit toe via het formulier hierboven.</p>
+                    <div class="mb-3">
+                        <label class="form-label">Artikel</label>
+                        <select class="form-select" name="artikel_id" required>
+                            <option value="">-- Kies --</option>
+                            <?php foreach ($artikelen as $art): ?>
+                                <option value="<?php echo $art['id']; ?>"><?php echo htmlspecialchars($art['naam']); ?></option>
+                            <?php endforeach; ?>
+                        </select>
                     </div>
-                <?php endif;?>
-            </div>
+                    <div class="mb-3">
+                        <label class="form-label">Kenteken</label>
+                        <input type="text" class="form-control" name="kenteken" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Afspraak datum/tijd</label>
+                        <input type="datetime-local" class="form-control" name="afspraak_op" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Toevoegen</button>
+                </div>
+            </form>
         </div>
     </div>
+</div>
 
-    <!-- Togle voor accordion functie -->
-    <script>
-        function toggleAccordion(header) {
-            const item = header.parentElement;
-            const content = item.querySelector('.accordion-content');
-            const arrow = header.querySelector('.accordion-arrow');
-            
-            // Open/dicht togelen
-            item.classList.toggle('open');
-        
-            if (item.classList.contains('open')) {
-                arrow.textContent = '▼';
-            } else {
-                arrow.textContent = '▶';
-            }
-        }
+<!-- Modal voor bewerken -->
+<?php if ($bewerken && $bewerkPlanning): ?>
+<div class="modal fade show" style="display: block; background: rgba(0,0,0,0.5);">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Rit Bewerken</h5>
+                <a href="ritten.php" class="btn-close"></a>
+            </div>
+            <form method="POST">
+                <input type="hidden" name="id" value="<?php echo $bewerkPlanning['id']; ?>">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Type</label>
+                        <select class="form-select" name="ophalen_of_bezorgen" required>
+                            <option value="ophalen" <?php echo ($bewerkPlanning['ophalen_of_bezorgen'] == 'ophalen') ? 'selected' : ''; ?>>Ophalen</option>
+                            <option value="bezorgen" <?php echo ($bewerkPlanning['ophalen_of_bezorgen'] == 'bezorgen') ? 'selected' : ''; ?>>Bezorgen</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Klant</label>
+                        <select class="form-select" name="klant_id" required>
+                            <?php foreach ($klanten as $k): ?>
+                                <option value="<?php echo $k['id']; ?>" <?php echo ($k['id'] == $bewerkPlanning['klant_id']) ? 'selected' : ''; ?>><?php echo htmlspecialchars($k['naam'] . ' - ' . $k['adres']); ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Artikel</label>
+                        <select class="form-select" name="artikel_id" required>
+                            <?php foreach ($artikelen as $art): ?>
+                                <option value="<?php echo $art['id']; ?>" <?php echo ($art['id'] == $bewerkPlanning['artikel_id']) ? 'selected' : ''; ?>><?php echo htmlspecialchars($art['naam']); ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Kenteken</label>
+                        <input type="text" class="form-control" name="kenteken" value="<?php echo htmlspecialchars($bewerkPlanning['kenteken']); ?>" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Afspraak datum/tijd</label>
+                        <input type="datetime-local" class="form-control" name="afspraak_op" value="<?php echo date('Y-m-d\TH:i', strtotime($bewerkPlanning['afspraak_op'])); ?>" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Opslaan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
 
-        function deleteItem(ritId, itemId) {
-            if (confirm('Zeker dat je dit item wil verwijderen?')) {
-                window.location.href = '?delete_item=' + itemId + '&rit_id=' + ritId;
-            }
-        }
-
-        function completeRit(ritId) {
-            fetch('?complete=' + ritId)
-                .then(response => {
-                    if (response.ok) {
-                        location.reload();
-                    }
-                });
-        }
-
-        function deleteRit(ritId) {
-            if (confirm('Zeker dat je deze rit wil verwijderen?')) {
-                fetch('?delete=' + ritId)
-                    .then(response => {
-                        if (response.ok) {
-                            location.reload();
-                        }
-                    });
-            }
-        }
-    </script>
-
-    <!-- Bootstrap JS -->
-    <script
-        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-        crossorigin="anonymous"
-    ></script>
-</body>
-</html>
+<?php require_once 'includes/footer.php'; ?>
