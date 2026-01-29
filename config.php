@@ -1,5 +1,10 @@
 <?php
-define('DB_HOST', 'localhost');
-define('DB_USER', 'root');
-define('DB_PASSWORD', '');
-define('DB_DATABASE', 'duurzaam');
+/*
+  - Versie: 1.0
+  - Datum: 28-01-2026
+  - Beschrijving: Credits for database
+ */
+$dbHost = "localhost";
+$dbNaam = "duurzaam";
+$dbGebruiker = "root";
+$dbWachtwoord = "";

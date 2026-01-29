@@ -1,77 +1,56 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <!-- Navigatie balk aan de bovenkant (Bootstrap) -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="index.php">Kringloop centrum</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+<?php
+/*
+ * Versie: 1.0
+ * Datum: 28-01-2026
+ * Beschrijving: Homepagina met overzicht van alle functies
+ */
 
-            <div class="collapse navbar-collapse" id="mainNavbar">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="index.php">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="ritten.php">Ritten</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="voorraad.php">Voorraad beheer</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="admin.php">Admin</a>
-                    </li>
-                </ul>
-                <a href="login.php" class="btn btn-outline-light rounded-pill">Aanmelden</a>
+require_once 'includes/header.php';
+?>
+
+<h1 class="mb-4">Welkom bij Kringloop Duurzaam</h1>
+<p class="lead">Beheer je ritten, voorraden en klanten op één plek.</p>
+
+<div class="row mt-5">
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title"><strong>Ritten</strong></h5>
+                <p class="card-text">Ritten plannen, bekijken en afvinken.</p>
+                <a href="ritten.php" class="btn btn-primary">Ga naar ritten</a>
             </div>
         </div>
-    </nav>
-
-<!-- Hoofd content pagina - 3 boxes met de meest gebruikte functies -->
-    <div class="page-container">
-        <!-- Welkomst sectie bovenaan -->
-        <div class="welcome-section">
-            <h1>Welkom bij Centrum Duurzaam</h1>
-            <p>Beheer je ritten, voorraden en administratie op één plek. Kies hieronder wat je wilt doen:</p>
-        </div>
-
-        <!-- De 3 main boxes die naar andere pagina's linken -->
-        <div class="boxes-container">
-            <!-- Box 1: Ritten management -->
-            <a href="ritten.php" class="box">
-                <div class="box-content">
-                    <div class="box-title">Ritten</div>
-                    <div class="box-description">Ritten plannen, verwijderen en afvinken</div>
-                </div>
-            </a>
-            <!-- Box 2: Voorraadbeheer -->
-            <a href="voorraad.php" class="box">
-                <div class="box-content">
-                    <div class="box-title">Voorraad beheer</div>
-                    <div class="box-description">Voorraden checken en bijhouden</div>
-                </div>
-            </a>
-            <!-- Box 3: Admin paneel -->
-            <a href="admin.php" class="box">
-                <div class="box-content">
-                    <div class="box-title">Admin paneel</div>
-                    <div class="box-description">Een dashboard waar alleen de directie heen kan</div>
-                </div>
-            </a>
+    </div>
+    
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title"><strong>Voorraad beheer</strong></h5>
+                <p class="card-text">Voorraden checken en bijhouden.</p>
+                <a href="voorraad.php" class="btn btn-primary">Ga naar voorraad beheer</a>
+            </div>
         </div>
     </div>
+    
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title"><strong>Categorieën</strong></h5>
+                <p class="card-text">Categorieën beheren.</p>
+                <a href="categorie.php" class="btn btn-primary">Ga naar categorieën</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title"><strong>Klanten</strong></h5>
+                <p class="card-text">Klantgegevens bekijken en beheren.</p>
+                <a href="klanten.php" class="btn btn-primary">Ga naar klanten</a>
+            </div>
+        </div>
+    </div>
+</div>
 
-    <!-- Bootstrap JS (Popper + Bootstrap) -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-</body>
-</html>
+<?php require_once 'includes/footer.php'; ?>
