@@ -1,8 +1,8 @@
 <?php
 /*
- * Versie: 1.0
- * Datum: 28-01-2026
- * Beschrijving: Uitloggen en sessie vernietigen
+ -Versie: 1.3
+ - Datum: 28-01-2026
+ - Beschrijving: logout by destroying session, pure fire wrath
  */
 
 session_start();
