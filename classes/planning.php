@@ -22,7 +22,7 @@ class Planning {
     }
     
     
-     /* Haalt alle ritten op met artikel en klant gegevens*/
+     /* Haalt alle ritten op met artikel en klant geggevens*/
     public function haalAlleOp() {
         $sql = "SELECT planning.*, artikel.naam as artikel_naam, klant.naam as klant_naam, klant.adres as klant_adres, klant.plaats as klant_plaats
                 FROM planning 
@@ -46,9 +46,9 @@ class Planning {
         $sql = "INSERT INTO planning (artikel_id, klant_id, kenteken, ophalen_of_bezorgen, afspraak_op) VALUES (:artikel_id, :klant_id, :kenteken, :ophalen_of_bezorgen, :afspraak_op)";
         $stmt = $this->db->prepare($sql);
         return $stmt->execute([
-            'artikel_id' => $artikel_id,
-            'klant_id' => $klant_id,
-            'kenteken' => $kenteken,
+        'artikel_id' => $artikel_id,
+        'klant_id' => $klant_id,
+        'kenteken' => $kenteken,
             'ophalen_of_bezorgen' => $ophalen_of_bezorgen,
             'afspraak_op' => $afspraak_op
         ]);
@@ -58,7 +58,7 @@ class Planning {
     public function bijwerken($id, $artikel_id, $klant_id, $kenteken, $ophalen_of_bezorgen, $afspraak_op) {
         $sql = "UPDATE planning SET artikel_id = :artikel_id, klant_id = :klant_id, kenteken = :kenteken, ophalen_of_bezorgen = :ophalen_of_bezorgen, afspraak_op = :afspraak_op WHERE id = :id";
         $stmt = $this->db->prepare($sql);
-        return $stmt->execute([
+    return $stmt->execute([
             'artikel_id' => $artikel_id,
             'klant_id' => $klant_id,
             'kenteken' => $kenteken,
@@ -69,7 +69,7 @@ class Planning {
     }
     
 /*Verwiijdert de gekozen rit*/
-    public function verwijderen($id) {
+public function verwijderen($id) {
         $sql = "DELETE FROM planning WHERE id = :id";
         $stmt = $this->db->prepare($sql);
         return $stmt->execute(['id' => $id]);
