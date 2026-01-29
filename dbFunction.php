@@ -40,15 +40,12 @@ public function UserRegister($gebruikersnaam, $wachtwoord) {
 
         $stmt->execute();
 
-        $result = $stmt->fetch();
-
-        if ($stmt->rowCount() === 1) { // changed from result->num_rows beacuse it was used for sqli
-        $user_data = $stmt->fetch(PDO::FETCH_ASSOC); // Fetch one row as an associative array (Search this)
-
+        $user_data = $stmt->fetch(PDO::FETCH_ASSOC);
+    // fixed to only fetching one time using fetch() instead of fethcing with a different variable, i was stupid // before it ultimately returned false because the second fetch found nothing
+        if ($user_data) {
             $_SESSION['login'] = true;
             $_SESSION['uid'] = $user_data['id'];
             $_SESSION['gebruikersnaam'] = $user_data['gebruikersnaam'];
-
             return true;
         }
 
@@ -67,6 +64,15 @@ public function isUserExist($gebruikersnaam) {
     }
     
     return false; // Return false if the execution failed
+}
+
+//want to get user info by id
+
+public function getUserById($uid) {
+    $stmt = $this->conn->prepare("SELECT * FROM gebruiker WHERE id = :uid");
+    $stmt->bindParam(':uid', $uid, PDO::PARAM_INT);
+    $stmt->execute();
+    return $stmt->fetch(PDO::FETCH_ASSOC);
 }
 
 

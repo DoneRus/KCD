@@ -25,7 +25,7 @@ include 'generalrun.php'
 
     </nav>
 
-                            
+                            <!--form register start, modify in the future to add more info to the database-->  
                     <div id="container_demo" >  
                          
                         <div id="wrapper">  

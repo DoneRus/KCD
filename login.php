@@ -1,5 +1,20 @@
 <?php
+session_start();
 include 'generalrun.php';
+    if(isset($_POST['logout'])){  
+        // remove all session variables  
+        session_unset();   
+  
+        // destroy the session   
+        session_destroy();  
+    } ;
+            if(($_SESSION)){  
+            header("Location:home.php");  
+        }  
+   if (($_SESSION)){
+    echo "there is a session here";
+   };
+
 ?>
 <!DOCTYPE html>
 <html lang="nl" class="no-js">
